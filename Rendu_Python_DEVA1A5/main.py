@@ -26,7 +26,6 @@ group.add_argument('-d',
                     help="Permet de specifier l'action de dechiffrement")
 
 def Chiffrement(fichierEntree, cle, fichierSortie, alphabet):
-    print(f"{fichierEntree}, {cle}, {fichierSortie}")
 
     i = 0
     j = 0
@@ -90,3 +89,4 @@ if __name__ == "__main__":
         Dechiffrement(args.fichierEntree,args.cle,args.fichierSortie,alphabet)
     else:
         print("Choisissez -c ou -d")
+        # force le -h pour expliquer comment utiliser la commande
