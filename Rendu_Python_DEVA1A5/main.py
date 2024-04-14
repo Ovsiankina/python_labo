@@ -50,9 +50,6 @@ def Chiffrement(fichierEntree, cle, fichierSortie, alphabet):
 
         # Check if special character
         if character.isalpha():
-            # print(f"{character} is not alpha")
-            # encryptedFile.write(character)
-            # break
             positionInput = a.index(character.lower())
             positionKey = a.index(parsedKey[j]) 
             
@@ -91,7 +88,61 @@ def Chiffrement(fichierEntree, cle, fichierSortie, alphabet):
         i += 1
 
 def Dechiffrement(fichierEntree, cle, fichierSortie, alphabet):
-    print(f"{fichierEntree}, {cle}, {fichierSortie}, {alphabet}")
+
+    i = 0
+    j = 0
+    a = alphabet
+
+    parsedKey = [characters for characters in cle]
+
+    encryptedFile = open(fichierEntree, 'r')
+    encryptedFileString = encryptedFile.read()
+
+    notEncryptedFile = open(fichierSortie, 'w')
+
+    for character in encryptedFileString:
+
+        if j >= len(parsedKey):
+            j = 0
+
+        # Check if special character
+        if character.isalpha():
+            positionInput = a.index(character.lower())
+            positionKey = a.index(parsedKey[j]) 
+            
+            # TexteClaire[i] = (TexteChiffré[i] - Clés[i]) modulo 26
+            decryptedCharacter = (positionInput - positionKey)%26 # position of key 
+
+            if args.verbose:
+                # Prevent trailing whitespace when printing
+                verbose = f"""
+                                === VERBOSE ===
+                                char:{character} + key:{parsedKey[j]} => {a[decryptedCharacter]}.
+                                key index = {positionKey}
+                        """
+                print(verbose)
+
+            ## Check if character is caps
+            if not character.isupper():
+                notEncryptedFile.write(a[decryptedCharacter])
+            else:
+                print(f"{character} is upper")
+                print("")
+                notEncryptedFile.write(a[decryptedCharacter].upper())
+
+            # j is here to prevent the key from "moving" when special characters
+            j += 1
+
+        elif not character.isalpha():
+            if args.verbose:
+
+                print(f"""
+                                '{character}' is not alpha
+                                NO CHANGES
+                """)
+            notEncryptedFile.write(character)
+        # Count loop 
+        i += 1
 
 if __name__ == "__main__":
     print("""
