@@ -13,6 +13,7 @@ parser.add_argument('fichierSortie',
                     help="Definit le fichier de sortie ou le resultat sera stocke")
 
 # Optional arguments
+# group prevent the use of both 'chiffrement' and 'dechiffrement' at the same time
 group = parser.add_mutually_exclusive_group()
 
 group.add_argument('-c',
@@ -25,47 +26,40 @@ group.add_argument('-d',
                     action="store_true",
                     help="Permet de specifier l'action de dechiffrement")
 
-parser.add_argument('-v',
-                    '--verbose',
-                    action="store_true",
-                    help="Description de ce qu'il ce passe")
-
-def Chiffrement(characterIndex, keyIndex):
+def Chiffrement(characterIndex, keyIndex, vigenereCharactersLength):
     # TexteChiffré[i] = (TexteClaire[i] + Clés[i]) modulo 26
-   return (characterIndex + keyIndex)%26 # position of key 
+    return (characterIndex + keyIndex)%vigenereCharactersLength # position of key 
 
-def Dechiffrement(characterIndex, keyIndex):
+def Dechiffrement(characterIndex, keyIndex, vigenereCharactersLength):
     # TexteClaire[i] = (TexteChiffré[i] - Clés[i]) modulo 26
-    return (characterIndex - keyIndex)%26 # position of key 
+    return (characterIndex - keyIndex)%vigenereCharactersLength # position of key 
 
 if __name__ == "__main__":
-    print("""
-    -------------
-    Test argparse
-    -------------
-    """)
 
-    # Alphabet used in the code
-    a = [
+    # Characters used for the vigenere encryption
+    vigenereCharacters = [
         'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
         'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
     ]
+    vigenereCharactersLength = len(vigenereCharacters)
 
     args = parser.parse_args()
     
-    # What happens is created but then empty and try decrypt?
-
     # Check if input file exists
     if not os.path.exists(args.fichierEntree):
-        create = open(args.fichierEntree, 'x')
-        create.close()
-    # Open files and get content
+        # create = open(args.fichierEntree, 'x')
+        # create.close()
+        print(f"Erreur: Le fichier {args.fichierEntree} n'existe pas")
+        exit()
+    # Open input file in read mode and get content
     inputFile = open(args.fichierEntree, 'r')
     inputString = inputFile.read()
 
+    # Tranform the key into an array
     key = args.Cle
     keyString = [characters for characters in key]
 
+    # Open output file in write mode
     outputFile = open(args.fichierSortie, 'w')
     outputString = ''
     outputCharacterIndex = 0
@@ -88,51 +82,33 @@ if __name__ == "__main__":
             written into the output file.
         """
         if character.isalpha():
-            characterIndex = a.index(character.lower())
-            keyIndex = a.index(keyString[j]) 
+            characterIndex = vigenereCharacters.index(character.lower())
+            keyIndex = vigenereCharacters.index(keyString[j]) 
 
             if args.chiffrement:
-                outputCharacterIndex = int(Chiffrement(characterIndex, keyIndex))
+                outputCharacterIndex = int(Chiffrement(characterIndex, keyIndex, vigenereCharactersLength))
             elif args.dechiffrement:
-                outputCharacterIndex = int(Dechiffrement(characterIndex, keyIndex))
+                outputCharacterIndex = int(Dechiffrement(characterIndex, keyIndex, vigenereCharactersLength))
             else:
-                print("Choisissez -c ou -d")
-                # force le -h pour expliquer comment utiliser la commande
-
-            if args.verbose:
-                # Prevent trailing whitespace when printing
-                verbose = f"""
-                                === VERBOSE ===
-                                char:{character} + key:{keyString[j]} => {a[outputCharacterIndex]}.
-                                key index = {keyIndex}
-                        """
-                print(verbose)
+                parser.error("Une option est requise. Utilisez l'option --help pour plus d'informations")
 
             ## Check if character is caps
             if not character.isupper():
-                print(outputString)
-                outputString = outputString + a[outputCharacterIndex]
-                print(outputString)
+                outputString = outputString + vigenereCharacters[outputCharacterIndex]
             else:
-                outputString = outputString + a[outputCharacterIndex].upper()
-                print(outputString)
+                outputString = outputString + vigenereCharacters[outputCharacterIndex].upper()
 
             # j is here to prevent the key from "moving" when special characters
             j += 1
 
+        # If character not alpha, we just insert it without modifications into the array
         elif not character.isalpha():
-            if args.verbose:
-                print(f"""
-                                '{character}' is not alpha
-                                NO CHANGES
-                """)
-
             outputString = outputString + character
+
         # Count loop 
         i += 1
 
     # Write the output into the output file
-    print(outputString)
     outputFile.write(outputString)
     # End of program. Closing files
     inputFile.close()
