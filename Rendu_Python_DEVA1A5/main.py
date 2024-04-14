@@ -25,6 +25,11 @@ group.add_argument('-d',
                     action="store_true",
                     help="Permet de specifier l'action de dechiffrement")
 
+parser.add_argument('-v',
+                    '--verbose',
+                    action="store_true",
+                    help="Description de ce qu'il ce passe")
+
 def Chiffrement(fichierEntree, cle, fichierSortie, alphabet):
 
     i = 0
@@ -36,29 +41,54 @@ def Chiffrement(fichierEntree, cle, fichierSortie, alphabet):
     notEncryptedFile = open(fichierEntree, 'r')
     notEncryptedFileString = notEncryptedFile.read()
 
-    encryptedFile = open(fichierSortie, 'a')
+    encryptedFile = open(fichierSortie, 'w')
 
     for character in notEncryptedFileString:
 
         if j >= len(parsedKey):
             j = 0
 
-        positionInput = a.index(character) 
-        positionKey = a.index(parsedKey[j]) 
-        
-        # TexteChiffré[i] = (TexteClaire[i] + Clés[i]) modulo 26
-        encryptedCharacter = (positionInput + positionKey)%26 # position of key 
+        # Check if special character
+        if character.isalpha():
+            # print(f"{character} is not alpha")
+            # encryptedFile.write(character)
+            # break
+            positionInput = a.index(character.lower())
+            positionKey = a.index(parsedKey[j]) 
+            
+            # TexteChiffré[i] = (TexteClaire[i] + Clés[i]) modulo 26
+            encryptedCharacter = (positionInput + positionKey)%26 # position of key 
 
-        print(f"""
-                {character} + {parsedKey[j]} => {a[encryptedCharacter]}
-                key index = {positionKey}
-            """)
+            if args.verbose:
+                # Prevent trailing whitespace when printing
+                verbose = f"""
+                                === VERBOSE ===
+                                char:{character} + key:{parsedKey[j]} => {a[encryptedCharacter]}.
+                                key index = {positionKey}
+                        """
+                print(verbose)
 
-        encryptedFile.write(a[encryptedCharacter])
-        
+            ## Check if character is caps
+            if not character.isupper():
+                encryptedFile.write(a[encryptedCharacter])
+            else:
+                print(f"{character} is upper")
+                print("")
+                encryptedFile.write(a[encryptedCharacter].upper())
+
+            # j is here to prevent the key from "moving" when special characters
+            j += 1
+
+        elif not character.isalpha():
+            if args.verbose:
+
+                print(f"""
+                                '{character}' is not alpha
+                                NO CHANGES
+                """)
+            encryptedFile.write(character)
+        # Count loop 
         i += 1
-        j += 1
-
 
 def Dechiffrement(fichierEntree, cle, fichierSortie, alphabet):
     print(f"{fichierEntree}, {cle}, {fichierSortie}, {alphabet}")
@@ -85,6 +115,7 @@ if __name__ == "__main__":
 
     if args.chiffrement:
         Chiffrement(args.fichierEntree,args.cle,args.fichierSortie,alphabet)
+
     elif args.dechiffrement:
         Dechiffrement(args.fichierEntree,args.cle,args.fichierSortie,alphabet)
     else:
