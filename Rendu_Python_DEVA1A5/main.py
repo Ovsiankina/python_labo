@@ -34,6 +34,14 @@ def Dechiffrement(characterIndex, keyIndex, vigenereCharactersLength):
     # TexteClaire[i] = (TexteChiffré[i] - Clés[i]) modulo 26
     return (characterIndex - keyIndex)%vigenereCharactersLength # position of key 
 
+def endProgram():
+    # Close files
+    inputFile.close()
+    outputFile.close()
+
+    # Exit the programm
+    sys.exit
+
 if __name__ == "__main__":
 
     # Characters used for the vigenere encryption
@@ -47,10 +55,9 @@ if __name__ == "__main__":
     
     # Check if input file exists
     if not os.path.exists(args.fichierEntree):
-        # create = open(args.fichierEntree, 'x')
-        # create.close()
         print(f"Erreur: Le fichier {args.fichierEntree} n'existe pas")
-        exit()
+        endProgram()
+
     # Open input file in read mode and get content
     inputFile = open(args.fichierEntree, 'r')
     inputString = inputFile.read()
@@ -81,7 +88,8 @@ if __name__ == "__main__":
             Then converts back the alphabet[index] into a letter which can be
             written into the output file.
         """
-        if character.isalpha():
+        if character.isalpha() and (character.lower() in vigenereCharacters):
+            print(character)
             characterIndex = vigenereCharacters.index(character.lower())
             keyIndex = vigenereCharacters.index(keyString[j]) 
 
@@ -101,8 +109,8 @@ if __name__ == "__main__":
             # j is here to prevent the key from "moving" when special characters
             j += 1
 
-        # If character not alpha, we just insert it without modifications into the array
-        elif not character.isalpha():
+        # If character not alpha or is an accentuated letter we just insert it without modifications into the array
+        else:
             outputString = outputString + character
 
         # Count loop 
@@ -111,5 +119,4 @@ if __name__ == "__main__":
     # Write the output into the output file
     outputFile.write(outputString)
     # End of program. Closing files
-    inputFile.close()
-    outputFile.close()
+    endProgram()
