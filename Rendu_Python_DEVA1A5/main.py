@@ -26,15 +26,49 @@ group.add_argument('-d',
                     action="store_true",
                     help="Permet de specifier l'action de dechiffrement")
 
+
 def Chiffrement(characterIndex, keyIndex, vigenereCharactersLength):
-    # TexteChiffré[i] = (TexteClaire[i] + Clés[i]) modulo 26
+    """ Encrypts the input text if the argument --chiffrement is passed
+    
+    TODO EXPLAIN HOW WORK LMAO
+    
+    Args:
+        characterIndex (int)                : Index of the input file character
+        keyIndex (int)                      : Index of the key character
+        vigenereCharactersLenght (int)      : Lenght of the vigenere array 
+    
+    Returns:
+        int:    TexteChiffré[i] = (TexteClaire[i] + Clés[i]) modulo 26
+    
+    """
     return (characterIndex + keyIndex)%vigenereCharactersLength # position of key 
 
 def Dechiffrement(characterIndex, keyIndex, vigenereCharactersLength):
-    # TexteClaire[i] = (TexteChiffré[i] - Clés[i]) modulo 26
+    """ Encrypts the input text if the argument --chiffrement is passed
+    
+    TODO EXPLAIN HOW WORK LMAO
+    
+    Args:
+        characterIndex (int)                : Index of the input file character
+        keyIndex (int)                      : Index of the key character
+        vigenereCharactersLenght (int)      : Lenght of the vigenere array 
+    
+    Returns:
+        int:    TexteChiffré[i] = (TexteClaire[i] + Clés[i]) modulo 26
+    
+    """
     return (characterIndex - keyIndex)%vigenereCharactersLength # position of key 
 
+
 def endProgram():
+    """ Function which closes files and insures the program exits proprely
+
+    Args:
+        None
+    
+    Returns:
+        None
+    """
     # Close files
     inputFile.close()
     outputFile.close()
@@ -42,81 +76,79 @@ def endProgram():
     # Exit the programm
     sys.exit
 
-if __name__ == "__main__":
+# Characters used for the vigenere encryption
+vigenereCharacters = [
+    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+    'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
+]
+vigenereCharactersLength = len(vigenereCharacters)
 
-    # Characters used for the vigenere encryption
-    vigenereCharacters = [
-        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
-        'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
-    ]
-    vigenereCharactersLength = len(vigenereCharacters)
+args = parser.parse_args()
 
-    args = parser.parse_args()
-    
-    # Check if input file exists
-    if not os.path.exists(args.fichierEntree):
-        print(f"Erreur: Le fichier {args.fichierEntree} n'existe pas")
-        endProgram()
-
-    # Open input file in read mode and get content
-    inputFile = open(args.fichierEntree, 'r')
-    inputString = inputFile.read()
-
-    # Tranform the key into an array
-    key = args.Cle
-    keyString = [characters for characters in key]
-
-    # Open output file in write mode
-    outputFile = open(args.fichierSortie, 'w')
-    outputString = ''
-    outputCharacterIndex = 0
-
-    i = 0
-    j = 0
-
-    for character in inputString:
-
-        if j >= len(keyString):
-            j = 0
-
-        """
-            Check if the current character is alphabetic
-
-            If yes, it'll convert both the current key and character into
-            the correct alphabet[indexes] and do calculations with these indexes.
-
-            Then converts back the alphabet[index] into a letter which can be
-            written into the output file.
-        """
-        if character.isalpha() and (character.lower() in vigenereCharacters):
-            print(character)
-            characterIndex = vigenereCharacters.index(character.lower())
-            keyIndex = vigenereCharacters.index(keyString[j]) 
-
-            if args.chiffrement:
-                outputCharacterIndex = int(Chiffrement(characterIndex, keyIndex, vigenereCharactersLength))
-            elif args.dechiffrement:
-                outputCharacterIndex = int(Dechiffrement(characterIndex, keyIndex, vigenereCharactersLength))
-            else:
-                parser.error("Une option est requise. Utilisez l'option --help pour plus d'informations")
-
-            ## Check if character is caps
-            if not character.isupper():
-                outputString = outputString + vigenereCharacters[outputCharacterIndex]
-            else:
-                outputString = outputString + vigenereCharacters[outputCharacterIndex].upper()
-
-            # j is here to prevent the key from "moving" when special characters
-            j += 1
-
-        # If character not alpha or is an accentuated letter we just insert it without modifications into the array
-        else:
-            outputString = outputString + character
-
-        # Count loop 
-        i += 1
-
-    # Write the output into the output file
-    outputFile.write(outputString)
-    # End of program. Closing files
+# Check if input file exists
+if not os.path.exists(args.fichierEntree):
+    print(f"Erreur: Le fichier {args.fichierEntree} n'existe pas")
     endProgram()
+
+# Open input file in read mode and get content
+inputFile = open(args.fichierEntree, 'r')
+inputString = inputFile.read()
+
+# Tranform the key into an array
+key = args.Cle
+keyString = [characters for characters in key]
+
+# Open output file in write mode
+outputFile = open(args.fichierSortie, 'w')
+outputString = ''
+outputCharacterIndex = 0
+
+i = 0
+j = 0
+
+for character in inputString:
+
+    if j >= len(keyString):
+        j = 0
+
+    """
+        Check if the current character is alphabetic
+
+        If yes, it'll convert both the current key and character into
+        the correct alphabet[indexes] and do calculations with these indexes.
+
+        Then converts back the alphabet[index] into a letter which can be
+        written into the output file.
+    """
+    if character.isalpha() and (character.lower() in vigenereCharacters):
+        print(character)
+        characterIndex = vigenereCharacters.index(character.lower())
+        keyIndex = vigenereCharacters.index(keyString[j]) 
+
+        if args.chiffrement:
+            outputCharacterIndex = int(Chiffrement(characterIndex, keyIndex, vigenereCharactersLength))
+        elif args.dechiffrement:
+            outputCharacterIndex = int(Dechiffrement(characterIndex, keyIndex, vigenereCharactersLength))
+        else:
+            parser.error("Une option est requise. Utilisez l'option --help pour plus d'informations")
+
+        ## Check if character is caps
+        if not character.isupper():
+            outputString = outputString + vigenereCharacters[outputCharacterIndex]
+        else:
+            outputString = outputString + vigenereCharacters[outputCharacterIndex].upper()
+
+        # j is here to prevent the key from "moving" when special characters
+        j += 1
+
+    # If character not alpha or is an accentuated letter we just insert it without modifications into the array
+    else:
+        outputString = outputString + character
+
+    # Count loop 
+    i += 1
+
+# Write the output into the output file
+outputFile.write(outputString)
+# End of program. Closing files
+endProgram()
