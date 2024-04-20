@@ -67,7 +67,7 @@ def main():
 
     """
     # Open input file in read mode and get content
-    inputFile = open(args.fichierEntrée, 'r')
+    input_file = open(args.fichierEntrée, 'r')
     # Get the key
     key = args.Clé
 
@@ -75,55 +75,55 @@ def main():
     # getAlphabet a funciton to improve readability
     letters = getAlphabet()
     # count number of letters
-    lettersCount = len(letters)
+    letter_count = len(letters)
 
-    # Get the content of the inputFile as a string
-    inputString = inputFile.read()
+    # Get the content of the input_file as a string
+    input_string = input_file.read()
 
     # Convert the key into an array
-    keyList = [characters for characters in key]
+    key_list = [characters for characters in key]
 
     # Define the return value of the function
-    outputString = ''
+    output_string = ''
 
     # Translate every characters one by one
-    # chosenOption tells this function if it need to encrypt or decrypt the characters
+    # chosen_option tells this function if it need to encrypt or decrypt the characters
     j = 0 
-    for character in inputString:
+    for character in input_string:
     
         # Check if we run out of key characters
-        if j >= len(keyList):
+        if j >= len(key_list):
             # If we ran out of character: set the key index we work with to 0
             j = 0
     
         # Check if character is a letter (checked as lowercased)
         if character.lower() in letters:
             # Modify the letter
-            outputCharacterIndex = vigenereOperationOnLetter(
+            output_character_index = vigenereOperationOnLetter(
                 letters,
-                lettersCount,
+                letter_count,
                 j,
                 character,
-                keyList
+                key_list
             )
 
-            letter = revertBackToLetter(letters, character, outputCharacterIndex)
-            # Insert the character into the outputString
-            outputString = outputString + letter
+            letter = revertBackToLetter(letters, character, output_character_index)
+            # Insert the character into the output_string
+            output_string = output_string + letter
 
             # j is here to prevent the key from "moving" when special characters
             j += 1
     
         # If character not a letter or is an accentuated letter we just insert it without modifications into the string
         else:
-            outputString = outputString + character
+            output_string = output_string + character
 
-    print(f"Le {chosenOption} s'est déroulé avec succès.")
+    print(f"Le {chosen_option} s'est déroulé avec succès.")
 
-    inputFile.close()
+    input_file.close()
     print(f"Le fichier {args.fichierEntrée} été correctement fermé")
 
-    writeOutputFile(outputString)
+    writeOutputFile(output_string)
     
 def getAlphabet():
     """ Produce and return an array of all the english letters
@@ -139,7 +139,7 @@ def getAlphabet():
 
     return letters
 
-def vigenereOperationOnLetter(letters, lettersCount, j, character, keyList):
+def vigenereOperationOnLetter(letters, letter_count, j, character, key_list):
     """ Do the vigenere arithmetic operation on input file character indexes
 
     This function uses character indexes from the alphabet, input file and
@@ -148,33 +148,33 @@ def vigenereOperationOnLetter(letters, lettersCount, j, character, keyList):
 
     Args:
         letters (str)       : The entire lowercapped english alphabet.
-        lettersCount (int)  : The number of letters in the enligsh alphabet.
+        letter_count (int)  : The number of letters in the enligsh alphabet.
         j (int)             : The current loop count.
         character (str)     : The current letter to be modified.
-        keyList (list)      : The entire key chosen by the user.
+        key_list (list)     : The entire key chosen by the user.
 
     Returns:
         int: The modified character index to be converted back into a letter.
     """
 
-    characterIndex = letters.index(character.lower())
-    keyIndex = letters.index(keyList[j]) 
+    character_index = letters.index(character.lower())
+    key_index = letters.index(key_list[j]) 
 
     # Translate characters using array indexes
-    if chosenOption == "chiffrement":
-        outputCharacterIndex = (characterIndex + keyIndex) % lettersCount # position of key 
+    if chosen_option == "chiffrement":
+        output_character_index = (character_index + key_index) % letter_count # position of key 
 
-    elif chosenOption == "dechiffrement":
-        outputCharacterIndex = (characterIndex - keyIndex) % lettersCount # position of key 
+    elif chosen_option == "dechiffrement":
+        output_character_index = (character_index - key_index) % letter_count # position of key 
 
     else:
         parser.error("Une option est requise. Utilisez l'option --help pour plus d'informations")
 
-    return outputCharacterIndex
+    return output_character_index
 
 
 # Revert back the indexe into a letter
-def revertBackToLetter(letters, letter, newIndex):
+def revertBackToLetter(letters, letter, new_index):
     """ Revert the index back into a string letter
 
     Check letter capitalization to maintain then search the modified letter
@@ -183,37 +183,37 @@ def revertBackToLetter(letters, letter, newIndex):
     Args:
         letters (str)       : The entire lowercapped english alphabet.
         letter (str)        : The current not yet modified letter.
-        newIndex (int)      : The new calculated index.
+        new_index (int)     : The new calculated index.
 
     Returns:
         str: The new letter which will be written in the output file
     """
     # If letter is uppercased, insert it as an uppercased letter
     if letter.isupper():
-        return letters[newIndex].upper()
+        return letters[new_index].upper()
     # Else insert the letter as it is
     else:
-        return letters[newIndex]
+        return letters[new_index]
 
-def writeOutputFile(outputString):
+def writeOutputFile(output_string):
     """ Write the result into the chosen output file
 
     Receive the output string from main() and write it into the chosen
     output file. Then ends the program proprely.
 
     Args:
-        outputString (str)  : The entire encrypted or decrypted input file.
+        output_string (str)  : The entire encrypted or decrypted input file.
 
     Returns:
         str: An string containing all the english alphabet letters.
     """
     # Open output file in write mode
-    outputFile = open(args.fichierSortie, 'w')
+    output_file = open(args.fichierSortie, 'w')
     # Write the output into the output file
-    outputFile.write(outputString)
+    output_file.write(output_string)
     print(f"Le fichier {args.fichierSortie} à été écrit.")
 
-    outputFile.close()
+    output_file.close()
     print(f"Le fichier {args.fichierSortie} à été correctement fermé")
 
     # Proprely end the program
@@ -237,6 +237,6 @@ if __name__ == '__main__':
     # Check what the user chose to do between "Chiffrement" and "Dechiffrement"
     # We get the optionnal argument here so that is error, no file were opened yet
     # also make the var accessible anywhere
-    chosenOption = getOptionnalArgument()
+    chosen_option = getOptionnalArgument()
 
     main()
