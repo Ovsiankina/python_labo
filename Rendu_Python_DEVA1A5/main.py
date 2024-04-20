@@ -4,7 +4,7 @@ import sys, os, argparse
 # ARGPARSE
 ##############################################################################
 
-parser = argparse.ArgumentParser(description='description : argparse test')
+parser = argparse.ArgumentParser()
 
 # Positional arguments 
 parser.add_argument('fichierEntrée',
