@@ -8,7 +8,7 @@ parser = argparse.ArgumentParser()
 
 # Positional arguments 
 parser.add_argument('fichierEntrée',
-                    help="Definit le fichier d'entrée qui sera chiffré ou dechiffré")
+                    help="Definit le fichier d'entrée qui sera chiffré ou déchiffré")
 
 parser.add_argument('Clé',
                     help="Definit la clé qui sera utilisée pour chiffrer ou déchiffrer")
@@ -17,7 +17,7 @@ parser.add_argument('fichierSortie',
                     help="Definit le fichier de sortie ou le resultat sera stocké")
 
 # Optional arguments
-# group prevent the use of both 'chiffrement' and 'dechiffrement' at the same time
+# group prevent the use of both 'chiffrement' and 'déchiffrement' at the same time
 group = parser.add_mutually_exclusive_group()
 
 group.add_argument('-c',
@@ -26,7 +26,7 @@ group.add_argument('-c',
                     help="Permet de specifier l'action de chiffrement")
 
 group.add_argument('-d',
-                    '--dechiffrement',
+                    '--déchiffrement',
                     action="store_true",
                     help="Permet de specifier l'action de déchiffrement")
 
@@ -51,8 +51,8 @@ def getOptionnalArgument():
     if args.chiffrement:
         return "chiffrement"
 
-    elif args.dechiffrement:
-        return "dechiffrement"
+    elif args.déchiffrement:
+        return "déchiffrement"
 
     # If no option was correctly chosen, return an error
     parser.error("Une option est requise. Utilisez l'option --help pour plus d'informations")
@@ -164,7 +164,7 @@ def vigenereOperationOnLetter(letters, letter_count, j, character, key_list):
     if chosen_option == "chiffrement":
         output_character_index = (character_index + key_index) % letter_count # position of key 
 
-    elif chosen_option == "dechiffrement":
+    elif chosen_option == "déchiffrement":
         output_character_index = (character_index - key_index) % letter_count # position of key 
 
     else:
